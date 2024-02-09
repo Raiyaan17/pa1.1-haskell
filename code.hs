@@ -9,25 +9,103 @@ data LinkedList a = Null | ListNode a (LinkedList a) deriving (Show, Eq)
 --Category: Easy
 
 -- Question 1
-targetSum :: [Int] -> Int ->[[Int]]
-targetSum = undefined
+targetSum :: [Int] -> Int -> [[Int]]
+targetSum [] _ = []
+targetSum (x:xs) k = ascendingOrder ((checkSum x xs k) ++ (targetSum xs k))
+
+
+checkSum :: Int -> [Int] -> Int -> [[Int]]
+checkSum _ [] _ = []
+checkSum n (x:xs) k = if (n + x == k) && (n >= x) then [[n, x]]
+                      else if (n + x == k) && (n < x) then [[x, n]]
+                      else checkSum n xs k 
+
+ascendingOrder :: [[Int]] -> [[Int]]
+ascendingOrder [] = []
+ascendingOrder matrix = let minPair = findMin matrix in
+                          minPair : ascendingOrder (removeMin minPair matrix)
+
+findMin :: [[Int]] -> [Int]
+findMin [row] = row
+findMin (row1:row2:matrix) = if myhead row1 < myhead row2 then findMin (row1:matrix)
+                             else findMin (row2:matrix)
+
+
+removeMin :: [Int] -> [[Int]] -> [[Int]]
+removeMin _ [] = []
+removeMin row (x:xs) = if row == x then xs
+                       else x : removeMin row xs
+    
+myhead :: [Int] -> Int
+myhead [x] = x
+myhead (x:xs) = x
+
+myfst :: ([a], b) -> [a]
+myfst (x, _) = x
+
+mysnd :: ([a], b) -> b
+mysnd (_, x) = x
+
 
 -- Question 2
+
+-- checking if left subtree is the same as right subtree. 
+-- can check by going over each node in each subtree and making a list for each subtree. then checking if both lists are the same.
+-- this would only work if the traversal order is the same for both subtrees.
+
+-- run a 'traverseTree' function on each subtree to return a list. 
+-- if traverseTree left == traverseTree right then True
+
 symmetricTree :: Eq a => Tree a -> Bool
-symmetricTree = undefined
+symmetricTree Nil = True
+symmetricTree (TreeNode left val right) = checkMirror left right
+
+checkMirror :: Eq a => Tree a -> Tree a -> Bool
+checkMirror Nil Nil = True
+checkMirror (TreeNode l_left l_val l_right) (TreeNode r_left r_val r_right) = if (l_val == r_val) then (checkMirror l_left r_right) && (checkMirror l_right r_left)
+                                                                              else False
+checkMirror _ _ = False
 
 -- Question 3
+
+-- reverse the given linked list and check for sameness with original.
+
 palindromList :: Eq a => LinkedList a -> Bool
-palindromList = undefined
+palindromList Null = True
+palindromList (ListNode x xs) = if (reverseList (ListNode x xs) (Null)) == (ListNode x xs) then True
+                                else False
+
+reverseList :: LinkedList a -> LinkedList a -> LinkedList a
+reverseList Null list = list
+reverseList (ListNode x xs) list = (reverseList xs (ListNode x list))
 
 -- Question 4
+
+-- start with root, level order traversal
+-- at every odd numbered level load nodes left-right
+-- at even numbered level reverse the list
 snakeTraversal :: Tree a -> [a]
 snakeTraversal = undefined
 
--- Question 5
-treeConstruction :: String -> Tree Char
-treeConstruction = undefined
 
+-- snakeOrder :: Tree a -> [a] -> Int -> [a]
+-- -- first call: frontier only contains root, and mainAcc is empty
+-- -- snakeOrder (TreeNode left val right) (x:[]) [] y  = if y % 2 == 0 then -- return a reversed loaded children
+
+-- -- snakeOrder (TreeNode left val right) (x:xs) y  = if y % 2 == 0 then 
+
+
+-- loadChildren :: TreeNode a -> Int -> [a]
+-- loadChildren (TreeNode left val right) x = drop 1 (val ++ loadChildren left x+1 ++ loadChildren right x+1)
+
+-- Question 5
+
+treeConstruction :: String -> Tree Char
+treeConstruction string  = undefined
+
+extractFirst :: String -> Char
+-- extractFirst "" = ""
+extractFirst (x:xs) = x
 
 -- Category: Medium
 
@@ -35,12 +113,19 @@ treeConstruction = undefined
 
 -- Question 1.1: Overload the (+) operator for Tree. You only need to overload (+). Keep the rest of the operators as undefined.   
 instance Num (Tree Int) where
-    (+) = undefined
+    (+) = addTrees
     (*) = undefined
     abs = undefined
     signum = undefined
     fromInteger = undefined
     negate = undefined
+
+addTrees :: Tree Int -> Tree Int -> Tree Int
+addTrees Nil Nil = Nil
+addTrees Nil b = b
+addTrees a Nil = a
+addTrees (TreeNode left1 v1 right1) (TreeNode left2 v2 right2) =
+    TreeNode (addTrees left1 left2) (v1 + v2) (addTrees right1 right2)
 
 -- Question 1.2
 
@@ -55,6 +140,7 @@ commonAncestor = undefined
 gameofLife :: [[Int]] -> [[Int]]
 gameofLife = undefined
 
+
 -- Question 4
 waterCollection :: [Int] -> Int
 waterCollection = undefined
@@ -62,7 +148,6 @@ waterCollection = undefined
 -- Question 5
 minPathMaze :: [[Int]] -> Int
 minPathMaze = undefined
-
 
 
 
